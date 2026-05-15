@@ -32,6 +32,27 @@ If the tool is not found, the agent should run:
 ./scripts/install.sh
 ```
 
+`install.sh` 安装策略（自动选择）：
+
+| 条件 | 安装方式 | 说明 |
+| :--- | :--- | :--- |
+| Docker 可用（推荐） | Docker 构建镜像 | 克隆源码 → `docker build` → 写入 wrapper script，无需 Rust 工具链 |
+| 仅有 Rust 工具链 | `cargo install` | 直接从源码编译并安装到 `$PATH` |
+
+安装后统一通过 `image-compress-tool` 命令调用，Agent 无需关心底层方式。
+
+### Docker 手动使用（无需安装）
+
+```bash
+# 构建镜像
+docker build -t image-compress-tool:latest .
+
+# 压缩图片（挂载当前目录）
+docker run --rm -v "$(pwd):/workdir" -w /workdir \
+    image-compress-tool:latest \
+    -i input.png -o output.webp -q 80
+```
+
 ## Usage
 
 ### 1. Smart Compression (Auto)
